@@ -102,29 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            // Crear FormData para enviar a Cloudinary
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'informes');
-            formData.append('cloud_name', 'dgrvexskc');
+            // Subir archivo a Firebase Storage
+            const fileRef = ref(storage, `informes/${currentUser.uid}/${Date.now()}_${file.name}`);
+            await uploadBytes(fileRef, file);
+            const pdfUrl = await getDownloadURL(fileRef);
 
-            // Subir a Cloudinary
-            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/auto/upload', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (!data.secure_url) {
-                throw new Error('Error al subir a Cloudinary');
-            }
-
-            // Guardar referencia en Firestore con URL de Cloudinary
+            // Guardar referencia en Firestore con URL de Firebase
             await addDoc(collection(db, "reports"), {
                 title: title,
                 authors: authors,
-                pdfUrl: data.secure_url,
+                pdfUrl: pdfUrl,
                 fileName: file.name,
                 createdAt: serverTimestamp(),
                 userId: currentUser.uid,
