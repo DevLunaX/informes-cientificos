@@ -1,29 +1,15 @@
-// Importamos Firebase desde el CDN para usarlo directo en HTML
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+// Importamos Supabase
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAiJYM5_41Qa3wdalj-0vVU37oLMqnW1tw",
-  authDomain: "informes-3ddf2.firebaseapp.com",
-  projectId: "informes-3ddf2",
-  storageBucket: "informes-3ddf2.firebasestorage.app",
-  messagingSenderId: "459068833148",
-  appId: "1:459068833148:web:ba647fa31fa4c357b278f9",
-  measurementId: "G-FL1BFGHCRT"
-};
-
-// Inicializar Firebase y Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+const supabaseUrl = 'https://kbluufxbclywwfxtfdeq.supabase.co';
+const supabaseKey = 'sb_publishable_kP3evxfrzBYzv7A_Q-d2uA_hG3O6Vc3';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
 // Monitorear estado de autenticación
-onAuthStateChanged(auth, (user) => {
-    currentUser = user;
+supabase.auth.onAuthStateChange((event, session) => {
+    currentUser = session?.user || null;
     updateAuthUI();
 });
 
@@ -48,21 +34,36 @@ function updateAuthUI() {
     }
 }
 
-// Login con Google
+// Login con email/contraseña (simplificado)
 window.loginWithGoogle = async function() {
     try {
-        const result = await signInWithPopup(auth, googleProvider);
-        console.log('Sesión iniciada:', result.user.displayName);
+        const email = prompt("Ingresa tu email:");
+        if (!email) return;
+        
+        const { data, error } = await supabase.auth.signInWithOtp({ email });
+        if (error) throw error;
+        
+        const otp = prompt("Revisa tu email y pega el código OTP:");
+        if (!otp) return;
+        
+        const { data: sessionData, error: sessionError } = await supabase.auth.verifyOtp({
+            email,
+            token: otp,
+            type: 'email'
+        });
+        if (sessionError) throw sessionError;
+        
+        console.log('Sesión iniciada');
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        alert('Error al iniciar sesión');
+        alert('Error: ' + error.message);
     }
 }
 
 // Logout
 window.logout = async function() {
     try {
-        await signOut(auth);
+        await supabase.auth.signOut();
         console.log('Sesión cerrada');
     } catch (error) {
         console.error('Error al cerrar sesión:', error);
@@ -100,33 +101,34 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            // Subir archivo a Cloudinary
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'informes');
+            // Subir archivo a Supabase Storage
+            const fileName = `${Date.now()}_${file.name}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('informes')
+                .upload(fileName, file);
+            
+            if (uploadError) throw uploadError;
 
-            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/raw/upload', {
-                method: 'POST',
-                body: formData
-            });
+            // Obtener URL pública del archivo
+            const { data: publicData } = supabase.storage
+                .from('informes')
+                .getPublicUrl(fileName);
+            
+            const pdfUrl = publicData.publicUrl;
 
-            if (!response.ok) {
-                throw new Error(`Cloudinary error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const pdfUrl = data.secure_url;
-
-            // Guardar referencia en Firestore con URL de Cloudinary
-            await addDoc(collection(db, "reports"), {
-                title: title,
-                authors: authors,
-                pdfUrl: pdfUrl,
-                fileName: file.name,
-                createdAt: serverTimestamp(),
-                userId: currentUser.uid,
-                userName: currentUser.displayName || currentUser.email
-            });
+            // Guardar referencia en Supabase Database
+            const { data, error } = await supabase
+                .from('reports')
+                .insert([{
+                    title: title,
+                    authors: authors,
+                    pdf_url: pdfUrl,
+                    file_name: file.name,
+                    user_id: currentUser.id,
+                    user_name: currentUser.email
+                }]);
+            
+            if (error) throw error;
 
             alert("¡Informe publicado exitosamente!");
             uploadForm.reset();
@@ -154,8 +156,12 @@ window.deleteReport = async function(reportId) {
 
     if (confirm("¿Estás seguro de que deseas eliminar este informe?")) {
         try {
-            const reportRef = doc(db, "reports", reportId);
-            await deleteDoc(reportRef);
+            const { error } = await supabase
+                .from('reports')
+                .delete()
+                .eq('id', reportId);
+            
+            if (error) throw error;
             alert("Informe eliminado correctamente");
         } catch (error) {
             console.error("Error al eliminar:", error);
@@ -167,9 +173,8 @@ window.deleteReport = async function(reportId) {
 // Función para cargar y mostrar informes
 function loadReports() {
     const articlesSection = document.querySelector('.articles-section');
-    const papersContainer = articlesSection.querySelector('article') ? articlesSection : null;
-
-    if (!papersContainer) {
+    
+    if (!articlesSection) {
         console.error("No se encontró el contenedor de artículos");
         return;
     }
@@ -182,41 +187,59 @@ function loadReports() {
         articlesSection.appendChild(dynamicContainer);
     }
 
-    // Escuchar cambios en Firestore en tiempo real
-    const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
-    
-    onSnapshot(q, (snapshot) => {
-        dynamicContainer.innerHTML = '';
+    // Escuchar cambios en Supabase en tiempo real
+    const subscription = supabase
+        .from('reports')
+        .on('*', payload => {
+            renderReports(dynamicContainer);
+        })
+        .subscribe();
+
+    // Cargar reportes iniciales
+    renderReports(dynamicContainer);
+}
+
+async function renderReports(container) {
+    try {
+        const { data, error } = await supabase
+            .from('reports')
+            .select('*')
+            .order('created_at', { ascending: false });
         
-        snapshot.forEach((docSnapshot) => {
-            const data = docSnapshot.data();
+        if (error) throw error;
+
+        container.innerHTML = '';
+        
+        data.forEach((report) => {
             const article = document.createElement('article');
             article.className = 'paper-card';
 
-            const fecha = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-ES', {
+            const fecha = report.created_at ? new Date(report.created_at).toLocaleDateString('es-ES', {
                 year: 'numeric',
                 month: 'long'
             }) : 'Reciente';
 
             // Botón eliminar solo si es el propietario
-            const isOwner = currentUser && currentUser.uid === data.userId;
-            const deleteBtn = isOwner ? `<button class="btn-delete" onclick="deleteReport('${docSnapshot.id}')">🗑️ Eliminar</button>` : '';
+            const isOwner = currentUser && currentUser.id === report.user_id;
+            const deleteBtn = isOwner ? `<button class="btn-delete" onclick="deleteReport('${report.id}')">🗑️ Eliminar</button>` : '';
 
             article.innerHTML = `
                 <span class="date">${fecha}</span>
-                <h3 class="paper-title">${data.title}</h3>
-                <p class="authors">${data.authors}</p>
-                <p class="paper-info">Por: ${data.userName}</p>
+                <h3 class="paper-title">${report.title}</h3>
+                <p class="authors">${report.authors}</p>
+                <p class="paper-info">Por: ${report.user_name}</p>
                 <div class="paper-actions">
-                    <button class="btn-download" onclick="viewPDF('${data.pdfUrl}', '${data.fileName}')">👁️ Ver PDF</button>
-                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${data.pdfUrl}', '${data.fileName}')">📥 Descargar</button>
+                    <button class="btn-download" onclick="viewPDF('${report.pdf_url}', '${report.file_name}')">👁️ Ver PDF</button>
+                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${report.pdf_url}', '${report.file_name}')">📥 Descargar</button>
                     ${deleteBtn}
                 </div>
             `;
             
-            dynamicContainer.appendChild(article);
+            container.appendChild(article);
         });
-    });
+    } catch (error) {
+        console.error("Error al cargar reportes:", error);
+    }
 }
 
 // Función para descargar PDF desde URL
