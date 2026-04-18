@@ -1,6 +1,5 @@
 // Importamos Firebase desde el CDN para usarlo directo en HTML
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
@@ -14,9 +13,8 @@ const firebaseConfig = {
   measurementId: "G-FL1BFGHCRT"
 };
 
-// Inicializar Firebase, Storage y Firestore
+// Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -102,12 +100,24 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            // Subir archivo a Firebase Storage
-            const fileRef = ref(storage, `informes/${currentUser.uid}/${Date.now()}_${file.name}`);
-            await uploadBytes(fileRef, file);
-            const pdfUrl = await getDownloadURL(fileRef);
+            // Subir archivo a Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'informes');
 
-            // Guardar referencia en Firestore con URL de Firebase
+            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/auto/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Cloudinary error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const pdfUrl = data.secure_url;
+
+            // Guardar referencia en Firestore con URL de Cloudinary
             await addDoc(collection(db, "reports"), {
                 title: title,
                 authors: authors,
