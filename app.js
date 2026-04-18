@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('file', file);
             formData.append('upload_preset', 'informes');
 
-            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/auto/upload', {
+            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/raw/upload', {
                 method: 'POST',
                 body: formData
             });
