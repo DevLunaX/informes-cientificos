@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal of University Reports - Repositorio Científico</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <header class="journal-header">
+        <div class="container">
+            <div class="header-top">
+                <div class="header-title">
+                    <h1>📚 Journal of University Reports</h1>
+                    <p>Repositorio oficial de investigaciones y prácticas universitarias</p>
+                </div>
+                <div class="auth-container" id="authContainer">
+                    <button id="loginBtn" class="btn-login" onclick="loginWithGoogle()" style="display:inline-block;">🔐 Iniciar Sesión</button>
+                    <span id="userName" class="user-name"></span>
+                    <button id="logoutBtn" class="btn-logout" onclick="logout()" style="display:none;">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="upload-section">
+            <h2>📤 Publicar nuevo informe</h2>
+            <form id="uploadForm" class="upload-form">
+                <div class="form-group">
+                    <label for="title">Título del Informe</label>
+                    <input type="text" id="title" required placeholder="Ej. Análisis de Algoritmos de Ordenamiento en Sistemas Distribuidos">
+                </div>
+                <div class="form-group">
+                    <label for="authors">Autores</label>
+                    <input type="text" id="authors" required placeholder="Ej. Luna García, Moctezuma López, González Rodríguez">
+                </div>
+                <div class="form-group">
+                    <label for="pdfFile">Selecciona tu archivo PDF</label>
+                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                </div>
+                <button type="submit" class="btn-submit">🚀 Subir Informe</button>
+            </form>
+        </section>
+
+        <hr class="divider">
+
+        <section class="articles-section">
+            <h2>📖 Artículos Publicados</h2>
+            
+            <article class="paper-card">
+                <span class="date">Abril 2026</span>
+                <h3 class="paper-title">Implementación de Patrones de Diseño en Arquitecturas Web</h3>
+                <p class="authors">Luna, G., Leo, M.</p>
+                <div class="paper-actions">
+                    <button class="btn-download" onclick="viewPDF('default1', 'Patrones_Diseño.pdf')">👁️ Ver PDF</button>
+                    <button class="btn-download btn-download-alt" onclick="downloadPDF('default1', 'Patrones_Diseño.pdf')">📥 Descargar</button>
+                </div>
+            </article>
+
+            <article class="paper-card">
+                <span class="date">Marzo 2026</span>
+                <h3 class="paper-title">Evaluación de Rendimiento en Bases de Datos Normalizadas (3NF)</h3>
+                <p class="authors">Moctezuma, G.</p>
+                <div class="paper-actions">
+                    <button class="btn-download" onclick="viewPDF('default2', 'BD_Normalizadas.pdf')">👁️ Ver PDF</button>
+                    <button class="btn-download btn-download-alt" onclick="downloadPDF('default2', 'BD_Normalizadas.pdf')">📥 Descargar</button>
+                </div>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
