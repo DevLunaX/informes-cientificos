@@ -211,8 +211,8 @@ function loadReports() {
                 <p class="authors">${data.authors}</p>
                 <p class="paper-info">Por: ${data.userName}</p>
                 <div class="paper-actions">
-                    <button class="btn-download" onclick="viewPDF('${data.fileId}', '${data.fileName}')">👁️ Ver PDF</button>
-                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${data.fileId}', '${data.fileName}')">📥 Descargar</button>
+                    <button class="btn-download" onclick="viewPDF('${data.pdfUrl}', '${data.fileName}')">👁️ Ver PDF</button>
+                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${data.pdfUrl}', '${data.fileName}')">📥 Descargar</button>
                     ${deleteBtn}
                 </div>
             `;
@@ -222,30 +222,16 @@ function loadReports() {
     });
 }
 
-// Función para descargar PDF desde localStorage
-window.downloadPDF = function(fileId, fileName) {
-    const pdfData = localStorage.getItem(`pdf_${fileId}`);
-    
-    if (!pdfData) {
-        alert("No se encontró el PDF");
-        return;
-    }
-
+// Función para descargar PDF desde URL
+window.downloadPDF = function(pdfUrl, fileName) {
     const link = document.createElement('a');
-    link.href = pdfData;
+    link.href = pdfUrl;
     link.download = fileName || 'documento.pdf';
     link.click();
 }
 
 // Función para ver PDF en una nueva ventana
-window.viewPDF = function(fileId, fileName) {
-    const pdfData = localStorage.getItem(`pdf_${fileId}`);
-    
-    if (!pdfData) {
-        alert("No se encontró el PDF");
-        return;
-    }
-
+window.viewPDF = function(pdfUrl, fileName) {
     const newWindow = window.open();
     newWindow.document.write(`
         <html>
@@ -257,7 +243,7 @@ window.viewPDF = function(fileId, fileName) {
             </style>
         </head>
         <body>
-            <iframe src="${pdfData}"></iframe>
+            <iframe src="${pdfUrl}"></iframe>
         </body>
         </html>
     `);
