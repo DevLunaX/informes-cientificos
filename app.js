@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('cloud_name', 'dgrvexskc');
 
             // Subir a Cloudinary
-            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/raw/upload', {
+            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/auto/upload', {
                 method: 'POST',
                 body: formData
             });
