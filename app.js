@@ -22,7 +22,7 @@ function updateAuthUI() {
 
     if (currentUser) {
         // Usuario autenticado
-        if (userNameSpan) userNameSpan.textContent = currentUser.displayName || currentUser.email;
+        if (userNameSpan) userNameSpan.textContent = `Sesión iniciada: ${currentUser.email}`;
         if (loginBtn) loginBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
         if (uploadSection) uploadSection.style.display = 'block';
@@ -34,28 +34,71 @@ function updateAuthUI() {
     }
 }
 
-// Login con email/contraseña (simplificado)
-window.loginWithGoogle = async function() {
+// Login/Registro simple con email y contraseña
+window.loginWithGoogle = function() {
+    document.getElementById('authModal').style.display = 'flex';
+}
+
+window.closeAuthModal = function() {
+    document.getElementById('authModal').style.display = 'none';
+    // Limpiar formularios
+    document.getElementById('loginForm').reset();
+    document.getElementById('registerForm').reset();
+}
+
+window.switchAuthTab = function(tab) {
+    // Cambiar botones activos
+    document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Cambiar contenido
+    document.querySelectorAll('.auth-tab-content').forEach(content => content.classList.remove('active'));
+    if (tab === 'login') {
+        document.getElementById('loginTab').classList.add('active');
+    } else {
+        document.getElementById('registerTab').classList.add('active');
+    }
+}
+
+window.handleLogin = async function(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
     try {
-        const email = prompt("Ingresa tu email:");
-        if (!email) return;
-        
-        const { data, error } = await supabase.auth.signInWithOtp({ email });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         
-        const otp = prompt("Revisa tu email y pega el código OTP:");
-        if (!otp) return;
-        
-        const { data: sessionData, error: sessionError } = await supabase.auth.verifyOtp({
-            email,
-            token: otp,
-            type: 'email'
-        });
-        if (sessionError) throw sessionError;
-        
-        console.log('Sesión iniciada');
+        closeAuthModal();
+        alert('¡Bienvenido!');
     } catch (error) {
-        console.error('Error al iniciar sesión:', error);
+        alert('Error: ' + error.message);
+    }
+}
+
+window.handleRegister = async function(event) {
+    event.preventDefault();
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const password2 = document.getElementById('registerPassword2').value;
+    
+    if (password !== password2) {
+        alert('Las contraseñas no coinciden');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        
+        closeAuthModal();
+        alert('¡Cuenta creada! Ahora inicia sesión.');
+    } catch (error) {
         alert('Error: ' + error.message);
     }
 }
@@ -145,6 +188,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cargar informes desde Firestore
     loadReports();
+
+    // Cerrar modal cuando se hace clic fuera de él
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('authModal');
+        if (e.target === modal) {
+            closeAuthModal();
+        }
+    });
 });
 
 // Función para eliminar informe

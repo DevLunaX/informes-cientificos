@@ -7,6 +7,38 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="module" src="app.js"></script>
+
+    <!-- Modal de Login/Registro -->
+    <div id="authModal" class="auth-modal" style="display:none;">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">🔐 Iniciar Sesión</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">📝 Registrarse</button>
+            </div>
+            
+            <!-- Tab: Login -->
+            <div id="loginTab" class="auth-tab-content active">
+                <h2>Inicia Sesión</h2>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                    <button type="submit" class="btn-auth">Iniciar Sesión</button>
+                </form>
+            </div>
+            
+            <!-- Tab: Registro -->
+            <div id="registerTab" class="auth-tab-content">
+                <h2>Crea tu cuenta</h2>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                    <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
+                    <input type="password" id="registerPassword2" placeholder="Confirmar contraseña" required>
+                    <button type="submit" class="btn-auth">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </head>
 <body>
     <header class="journal-header">
