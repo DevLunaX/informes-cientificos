@@ -280,8 +280,8 @@ async function renderReports(container) {
                 <p class="authors">${report.authors}</p>
                 <p class="paper-info">Por: ${report.user_name}</p>
                 <div class="paper-actions">
-                    <button class="btn-download" onclick="viewPDF('${report.pdf_url}', '${report.file_name}')">👁️ Ver PDF</button>
-                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${report.pdf_url}', '${report.file_name}')">📥 Descargar</button>
+                    <button class="btn-download" onclick="viewPDF('${report.pdf_url}', '${report.file_name}')">Ver PDF</button>
+                    <button class="btn-download btn-download-alt" onclick="downloadPDF('${report.pdf_url}', '${report.file_name}')">Descargar</button>
                     ${deleteBtn}
                 </div>
             `;
