@@ -102,32 +102,39 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            // Convertir PDF a base64
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const base64PDF = event.target.result;
-                const fileId = Date.now().toString();
+            // Crear FormData para enviar a Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'informes');
+            formData.append('cloud_name', 'dgrvexskc');
 
-                // Guardar PDF en localStorage
-                localStorage.setItem(`pdf_${fileId}`, base64PDF);
+            // Subir a Cloudinary
+            const response = await fetch('https://api.cloudinary.com/v1_1/dgrvexskc/auto/upload', {
+                method: 'POST',
+                body: formData
+            });
 
-                // Guardar referencia en Firestore con userId
-                await addDoc(collection(db, "reports"), {
-                    title: title,
-                    authors: authors,
-                    fileId: fileId,
-                    fileName: file.name,
-                    createdAt: serverTimestamp(),
-                    userId: currentUser.uid,
-                    userName: currentUser.displayName || currentUser.email
-                });
+            const data = await response.json();
 
-                alert("¡Informe publicado exitosamente!");
-                uploadForm.reset();
-                submitBtn.textContent = "🚀 Subir Informe";
-                submitBtn.disabled = false;
-            };
-            reader.readAsDataURL(file);
+            if (!data.secure_url) {
+                throw new Error('Error al subir a Cloudinary');
+            }
+
+            // Guardar referencia en Firestore con URL de Cloudinary
+            await addDoc(collection(db, "reports"), {
+                title: title,
+                authors: authors,
+                pdfUrl: data.secure_url,
+                fileName: file.name,
+                createdAt: serverTimestamp(),
+                userId: currentUser.uid,
+                userName: currentUser.displayName || currentUser.email
+            });
+
+            alert("¡Informe publicado exitosamente!");
+            uploadForm.reset();
+            submitBtn.textContent = "🚀 Subir Informe";
+            submitBtn.disabled = false;
 
         } catch (error) {
             console.error("Error:", error);
