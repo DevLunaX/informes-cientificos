@@ -177,6 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadForm.reset();
             submitBtn.textContent = "🚀 Subir Informe";
             submitBtn.disabled = false;
+            
+            // Recargar reportes
+            const dynamicContainer = document.getElementById('dynamicReports');
+            if (dynamicContainer) renderReports(dynamicContainer);
 
         } catch (error) {
             console.error("Error:", error);
@@ -214,6 +218,10 @@ window.deleteReport = async function(reportId) {
             
             if (error) throw error;
             alert("Informe eliminado correctamente");
+            
+            // Recargar reportes
+            const dynamicContainer = document.getElementById('dynamicReports');
+            if (dynamicContainer) renderReports(dynamicContainer);
         } catch (error) {
             console.error("Error al eliminar:", error);
             alert("Error al eliminar el informe");
@@ -237,14 +245,6 @@ function loadReports() {
         dynamicContainer.id = 'dynamicReports';
         articlesSection.appendChild(dynamicContainer);
     }
-
-    // Escuchar cambios en Supabase en tiempo real
-    const subscription = supabase
-        .from('reports')
-        .on('*', payload => {
-            renderReports(dynamicContainer);
-        })
-        .subscribe();
 
     // Cargar reportes iniciales
     renderReports(dynamicContainer);
