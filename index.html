@@ -7,38 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="module" src="app.js"></script>
-
-    <!-- Modal de Login/Registro -->
-    <div id="authModal" class="auth-modal" style="display:none;">
-        <div class="auth-modal-content">
-            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
-            <div class="auth-tabs">
-                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">🔐 Iniciar Sesión</button>
-                <button class="auth-tab-btn" onclick="switchAuthTab('register')">📝 Registrarse</button>
-            </div>
-            
-            <!-- Tab: Login -->
-            <div id="loginTab" class="auth-tab-content active">
-                <h2>Inicia Sesión</h2>
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <input type="email" id="loginEmail" placeholder="Email" required>
-                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
-                    <button type="submit" class="btn-auth">Iniciar Sesión</button>
-                </form>
-            </div>
-            
-            <!-- Tab: Registro -->
-            <div id="registerTab" class="auth-tab-content">
-                <h2>Crea tu cuenta</h2>
-                <form id="registerForm" onsubmit="handleRegister(event)">
-                    <input type="email" id="registerEmail" placeholder="Email" required>
-                    <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
-                    <input type="password" id="registerPassword2" placeholder="Confirmar contraseña" required>
-                    <button type="submit" class="btn-auth">Registrarse</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </head>
 <body>
     <header class="journal-header">
@@ -47,11 +15,6 @@
                 <div class="header-title">
                     <h1>📚 Journal of University Reports</h1>
                     <p>Repositorio oficial de investigaciones y prácticas universitarias</p>
-                </div>
-                <div class="auth-container" id="authContainer">
-                    <button id="loginBtn" class="btn-login" onclick="loginWithGoogle()" style="display:inline-block;">🔐 Iniciar Sesión</button>
-                    <span id="userName" class="user-name"></span>
-                    <button id="logoutBtn" class="btn-logout" onclick="logout()" style="display:none;">Cerrar Sesión</button>
                 </div>
             </div>
         </div>
@@ -73,7 +36,7 @@
                     <label for="pdfFile">Selecciona tu archivo PDF</label>
                     <input type="file" id="pdfFile" accept="application/pdf" required>
                 </div>
-                <button type="submit" class="btn-submit">🚀 Subir Informe</button>
+                <button type="submit" class="btn-submit">Subir Informe</button>
             </form>
         </section>
 
@@ -81,26 +44,6 @@
 
         <section class="articles-section">
             <h2>📖 Artículos Publicados</h2>
-            
-            <article class="paper-card">
-                <span class="date">Abril 2026</span>
-                <h3 class="paper-title">Implementación de Patrones de Diseño en Arquitecturas Web</h3>
-                <p class="authors">Luna, G., Leo, M.</p>
-                <div class="paper-actions">
-                    <button class="btn-download" onclick="viewPDF('default1', 'Patrones_Diseño.pdf')">Ver PDF</button>
-                    <button class="btn-download btn-download-alt" onclick="downloadPDF('default1', 'Patrones_Diseño.pdf')">Descargar</button>
-                </div>
-            </article>
-
-            <article class="paper-card">
-                <span class="date">Marzo 2026</span>
-                <h3 class="paper-title">Evaluación de Rendimiento en Bases de Datos Normalizadas (3NF)</h3>
-                <p class="authors">Moctezuma, G.</p>
-                <div class="paper-actions">
-                    <button class="btn-download" onclick="viewPDF('default2', 'BD_Normalizadas.pdf')">Ver PDF</button>
-                    <button class="btn-download btn-download-alt" onclick="downloadPDF('default2', 'BD_Normalizadas.pdf')">Descargar</button>
-                </div>
-            </article>
         </section>
     </main>
 </body>
