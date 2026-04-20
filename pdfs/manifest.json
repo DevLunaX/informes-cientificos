@@ -1,8 +1,26 @@
-[
+]
   {
-    "file": "ejemplo-informe.pdf",
-    "title": "Ejemplo: Análisis de Algoritmos de Ordenamiento",
-    "authors": "Luna García, Moctezuma López",
-    "date": "2025-01-01"
+    "file": "informe .pdf",
+    "title": "Sistema de Transporte en Dolores Hidalgo: Análisis de Problemáticas",
+    "authors": "Diego David del Ángel Sánchez; Cristian Uriel Juárez López",
+    "date": "2026-01-01"
+  },
+  {
+    "file": "Articulo.pdf",
+    "title": "Bajo uso de tecnologías digitales para el control de vacunación en la ganadería del municipio de San Diego de la Unión (2026)",
+    "authors": "Ricardo Aarón Olalde Tovar; Ramiro Padierna Delgado",
+    "date": "2026-01-01"
+  },
+  {
+    "file": "La gestión del tiempo de los estudiantes de la UTNG en 2026.pdf",
+    "title": "La gestión del tiempo de los estudiantes de la UTNG en 2026",
+    "authors": "Carranco Ramírez Jorge Alberto; Miguel Ángel Hernández Godínez",
+    "date": "2026-01-01"
+  },
+  {
+    "file": "Artículo.pdf",
+    "title": "Viabilidad de implementar herramientas digitales para el control de inventarios en pequeños comercios de Dolores Hidalgo, Guanajuato",
+    "authors": "Ortiz González Esli; Mellado Sánchez Dulce Jimena",
+    "date": "2026-04-01"
   }
 ]
