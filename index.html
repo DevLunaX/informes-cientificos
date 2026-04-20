@@ -3,58 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journal of University Reports - Repositorio Científico</title>
+    <title>Journal of University Reports — Vol. 1, 2025</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script type="module" src="app.js"></script>
 </head>
 <body>
+    <div class="journal-topbar">
+        <div class="container">
+            <span>Vol. 1 &middot; 2025</span>
+            <span class="topbar-divider">|</span>
+            <span>Repositorio Científico Universitario</span>
+            <span class="topbar-divider">|</span>
+            <span>ISSN 0000-0000</span>
+        </div>
+    </div>
+
     <header class="journal-header">
         <div class="container">
-            <div class="header-top">
-                <div class="header-title">
-                    <h1>📚 Journal of University Reports</h1>
-                    <p>Repositorio oficial de investigaciones y prácticas universitarias</p>
+            <div class="header-inner">
+                <div class="journal-emblem">JUR</div>
+                <div class="header-text">
+                    <h1>Journal of University Reports</h1>
+                    <p class="journal-tagline">Repositorio oficial de investigaciones y prácticas universitarias</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <section class="upload-section">
-            <h2>📤 Publicar nuevo informe</h2>
-            <form id="uploadForm" class="upload-form">
-                <div class="form-group">
-                    <label for="title">Título del Informe</label>
-                    <input type="text" id="title" required placeholder="Ej. Análisis de Algoritmos de Ordenamiento en Sistemas Distribuidos">
+    <nav class="journal-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#articles" class="nav-active">Artículos</a></li>
+                <li><a href="#pdfs">Repositorio</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="articles-section" id="articles">
+                <div class="section-header">
+                    <h2>Artículos Publicados</h2>
+                    <p class="section-subtitle">Investigaciones y prácticas académicas recientes</p>
                 </div>
-                <div class="form-group">
-                    <label for="authors">Autores</label>
-                    <input type="text" id="authors" required placeholder="Ej. Luna García, Moctezuma López, González Rodríguez">
+                <div id="dynamicReports"></div>
+            </section>
+
+            <section class="pdf-folder-section" id="pdfs">
+                <div class="section-header">
+                    <h2>Repositorio de Informes</h2>
+                    <p class="section-subtitle">Informes subidos directamente al repositorio</p>
                 </div>
-                <div class="form-group">
-                    <label for="pdfFile">Selecciona tu archivo PDF</label>
-                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                <div id="pdfFolderList" class="pdf-folder-list">
+                    <p class="loading-msg">Cargando documentos&hellip;</p>
                 </div>
-                <button type="submit" class="btn-submit">Subir Informe</button>
-            </form>
-        </section>
-
-        <hr class="divider">
-
-        <section class="articles-section">
-            <h2>📖 Artículos Publicados</h2>
-        </section>
-
-        <hr class="divider">
-
-        <section class="pdf-folder-section">
-            <h2>📂 PDFs de Compañeros</h2>
-            <p class="section-subtitle">Informes subidos directamente al repositorio</p>
-            <div id="pdfFolderList" class="pdf-folder-list">
-                <p class="loading-msg">Cargando PDFs...</p>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
+
+    <footer class="journal-footer">
+        <div class="container">
+            <p>&copy; 2025 Journal of University Reports &middot; Todos los derechos reservados</p>
+            <p class="footer-note">Repositorio de acceso abierto para investigaciones universitarias</p>
+        </div>
+    </footer>
 </body>
 </html>
