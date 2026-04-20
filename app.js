@@ -77,8 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Cargar informes
+    // Cargar informes de Supabase
     loadReports();
+
+    // Cargar PDFs de la carpeta pdfs/ vía manifest.json
+    loadPdfFolder();
 });
 
 // Función para cargar y mostrar informes
@@ -166,3 +169,47 @@ window.viewPDF = function(pdfUrl, fileName) {
         </html>
     `);
 }
+
+// ── PDFs estáticos desde pdfs/manifest.json ──────────────────────────────────
+
+async function loadPdfFolder() {
+    const container = document.getElementById('pdfFolderList');
+    if (!container) return;
+
+    try {
+        const response = await fetch('pdfs/manifest.json');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const pdfs = await response.json();
+
+        container.innerHTML = '';
+
+        if (!Array.isArray(pdfs) || pdfs.length === 0) {
+            container.innerHTML = '<p class="empty-msg">No hay PDFs disponibles todavía.</p>';
+            return;
+        }
+
+        pdfs.forEach((pdf) => {
+            const pdfUrl = `pdfs/${pdf.file}`;
+            const fecha = pdf.date
+                ? new Date(pdf.date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
+                : '';
+
+            const card = document.createElement('article');
+            card.className = 'paper-card';
+            card.innerHTML = `
+                ${fecha ? `<span class="date">${fecha}</span>` : ''}
+                <h3 class="paper-title">${pdf.title}</h3>
+                <p class="authors">${pdf.authors}</p>
+                <div class="paper-actions">
+                    <a class="btn-download" href="${pdfUrl}" target="_blank" rel="noopener noreferrer">👁 Ver</a>
+                    <a class="btn-download btn-download-alt" href="${pdfUrl}" download="${pdf.file}">⬇ Descargar</a>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } catch (err) {
+        console.error('Error al cargar manifest.json:', err);
+        container.innerHTML = '<p class="empty-msg">No se pudieron cargar los PDFs.</p>';
+    }
+}
+
