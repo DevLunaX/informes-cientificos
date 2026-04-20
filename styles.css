@@ -507,3 +507,38 @@ input[type="text"]:focus, input[type="file"]:focus {
         padding: 30px;
     }
 }
+
+/* Sección de PDFs estáticos (carpeta pdfs/) */
+.pdf-folder-section {
+    margin-bottom: 40px;
+}
+
+.pdf-folder-section h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+.pdf-folder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.loading-msg,
+.empty-msg {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 20px 0;
+}
